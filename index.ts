@@ -16,6 +16,7 @@ const getEnvVariable = (name: string): string => {
 };
 
 // A given name for all resources that may overlap
+// FIXME we should probably use a pulumi random string here.
 const projectRandId = getEnvVariable('PROJECT_RAND_ID');
 
 // Define facts for the midl polkadot cluster.
