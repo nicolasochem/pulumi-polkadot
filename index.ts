@@ -5,8 +5,18 @@ import * as kubernetes from "@pulumi/kubernetes";
 
 import * as docluster from "./cluster/digitalocean";
 
+// Function to fail on non-truthy variable.
+const getEnvVariable = (name: string): string => {
+  const env = process.env[name];
+  if (!env) {
+    pulumi.log.error(`${name} environment variable is not set`);
+    throw Error;
+  }
+  return env;
+};
+
 // A given name for all resources that may overlap
-const projectRandomId = "nico";
+const projectRandId = getEnvVariable('PROJECT_RAND_ID');
 
 // Define facts for the midl polkadot cluster.
 const midlProject = {
@@ -26,7 +36,7 @@ const midlKubernetes = {
     version: "1.21.2-do.2",
     region: "ams3",
     nodePool: {
-        name: "nico-polkadot-nodes",
+        name: `${projectRandomId}-polkadot-nodes`,
         // size could be found via do url:
         // https://cloud.digitalocean.com/kubernetes/clusters/new?i=xxxx&nodePools=s-4vcpu-8gb:1&clusterVersion=1.21.2-do.2&region=nyc1
         size: "s-4vcpu-8gb",
@@ -35,7 +45,7 @@ const midlKubernetes = {
 };
 
 // Create polkadot cluster on digitalocean.
-const polkadotCluster = new docluster.MIDLCluster("nico-polkadot-cluster", {
+const polkadotCluster = new docluster.MIDLCluster(`${projectRandomId}-polkadot-cluster`, {
     project: midlProject,
     vpc: midlVPC,
     k8s: midlKubernetes,
