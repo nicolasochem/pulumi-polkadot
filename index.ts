@@ -92,6 +92,8 @@ const loadBalancer = new kubernetes.core.v1.Service("midl-polkadot-lb", {
     dependsOn: [testValidatorNamespace, provider, kubecluster],
 });
 
+export let lbIp = loadBalancer.status.loadBalancer.ingress[0].ip;
+
 const midlPolkaValidator01 = new kubernetes.helm.v3.Chart("midl-polkadot-test-validtor", {
     path: "./charts/polkadot/",
     values: {
@@ -105,11 +107,10 @@ const midlPolkaValidator01 = new kubernetes.helm.v3.Chart("midl-polkadot-test-va
         "polkadot_archive_url": "https://ksm-rocksdb.polkashots.io/snapshot",
         "chain": "kusama",
         "polkadot_validator_name": "midl-polkadot-test-validtor",
-        "p2p_ip": "206.189.241.230",
+        "p2p_ip": lbIp,
         "p2p_port": 31333
     },
-    // Intetegrated registry 401 error with new created ns
-    // namespace: testValidatorNamespace.metadata.name,
+    namespace: testValidatorNamespace.metadata.name,
 },{
     provider: provider,
     dependsOn: [testValidatorNamespace, provider, kubecluster],
