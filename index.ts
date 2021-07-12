@@ -21,17 +21,6 @@ const midlVPC = {
     region: "ams3",
 };
 
-const midlLoadBalancer = {
-    name: `${projectRandomId}-polkadot-lb`,
-    region: "ams3",
-    forwardingRules: [{
-        entryPort: 31333,
-        entryProtocol: "tcp",
-        targetPort: 31333,
-        targetProtocol: "tcp",
-    }],
-};
-
 const midlKubernetes = {
     name: `${projectRandomId}-polkadot-k8s`,
     version: "1.21.2-do.2",
@@ -49,16 +38,12 @@ const midlKubernetes = {
 const polkadotCluster = new docluster.MIDLCluster("nico-polkadot-cluster", {
     project: midlProject,
     vpc: midlVPC,
-    lb: midlLoadBalancer,
     k8s: midlKubernetes,
     description: "Cluster on digitalocean to host polkadot/ksm validators."
 });
 
 // Deploy helm charts on k8s cluster on DO
 // Declarations of validators.
-// Get Loadbalancer ip
-const lb = polkadotCluster.doLoadBalancer;
-const lbIP = lb.ip;
 // Get k8s config
 const kubecluster = polkadotCluster.doK8s;
 const kubeconfig = kubecluster.kubeConfigs[0].rawConfig;
@@ -87,7 +72,7 @@ const midlPolkaValidator01 = new kubernetes.helm.v3.Chart("midl-polkadot-test-va
         "polkadot_archive_url": "https://ksm-rocksdb.polkashots.io/snapshot",
         "chain": "kusama",
         "polkadot_validator_name": "midl-polkadot-test-validtor",
-        "p2p_ip": lbIP,
+        "p2p_ip": "1.2.3.4",
         "p2p_port": 31333
     },
     // Intetegrated registry 401 error with new created ns
