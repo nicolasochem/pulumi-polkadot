@@ -5,21 +5,24 @@ import * as kubernetes from "@pulumi/kubernetes";
 
 import * as docluster from "./cluster/digitalocean";
 
+// A given name for all resources that may overlap
+const projectRandomId = "nico";
+
 // Define facts for the midl polkadot cluster.
 const midlProject = {
-    name: "midl-polkadot",
+    name: `${projectRandomId}-polkadot`,
     description: "Project to confine midl polkadot/ksm resources",
     environment: "Production",
     purpose: "Other",
 };
 
 const midlVPC = {
-    name: "midl-polkadot-vpc",
+    name: `${projectRandomId}-polkadot-vpc`,
     region: "ams3",
 };
 
 const midlLoadBalancer = {
-    name: "midl-polakdot-lb",
+    name: `${projectRandomId}-polkadot-lb`,
     region: "ams3",
     forwardingRules: [{
         entryPort: 31333,
@@ -30,11 +33,11 @@ const midlLoadBalancer = {
 };
 
 const midlKubernetes = {
-    name: "midl-polkadot-k8s",
+    name: `${projectRandomId}-polkadot-k8s`,
     version: "1.21.2-do.2",
     region: "ams3",
     nodePool: {
-        name: "midl-polkadot-nodes",
+        name: "nico-polkadot-nodes",
         // size could be found via do url:
         // https://cloud.digitalocean.com/kubernetes/clusters/new?i=xxxx&nodePools=s-4vcpu-8gb:1&clusterVersion=1.21.2-do.2&region=nyc1
         size: "s-4vcpu-8gb",
@@ -43,7 +46,7 @@ const midlKubernetes = {
 };
 
 // Create polkadot cluster on digitalocean.
-const polkadotCluster = new docluster.MIDLCluster("midl-polkadot-cluster", {
+const polkadotCluster = new docluster.MIDLCluster("nico-polkadot-cluster", {
     project: midlProject,
     vpc: midlVPC,
     lb: midlLoadBalancer,
