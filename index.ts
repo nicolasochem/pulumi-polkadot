@@ -59,6 +59,30 @@ const testValidatorNamespace = new kubernetes.core.v1.Namespace("test-validator-
     dependsOn: [provider, kubecluster]
 });
 
+const loadBalancer = new kubernetes.core.v1.Service("midl-polkadot-lb", {
+    metadata: {
+        namespace: testValidatorNamespace.metadata.name,
+        name: "midl-polkadot-lb",
+        labels: {
+            app: "polkadot-node"
+        }
+    },
+    spec: {
+        ports: [ {
+            port: 31333,
+            protocol: "TCP",
+            name: "dot-p2p-port"
+        } ],
+        selector: {
+            app: "polkadot-node"
+        },
+        type: "LoadBalancer"
+    }
+},{
+    provider: provider,
+    dependsOn: [testValidatorNamespace, provider, kubecluster],
+});
+
 const midlPolkaValidator01 = new kubernetes.helm.v3.Chart("midl-polkadot-test-validtor", {
     path: "./charts/polkadot/",
     values: {
