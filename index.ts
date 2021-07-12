@@ -72,7 +72,7 @@ const midlPolkaValidator01 = new kubernetes.helm.v3.Chart("midl-polkadot-test-va
         "polkadot_archive_url": "https://ksm-rocksdb.polkashots.io/snapshot",
         "chain": "kusama",
         "polkadot_validator_name": "midl-polkadot-test-validtor",
-        "p2p_ip": "1.2.3.4",
+        "p2p_ip": "206.189.241.230",
         "p2p_port": 31333
     },
     // Intetegrated registry 401 error with new created ns
