@@ -63,6 +63,15 @@ const loadBalancer = new kubernetes.core.v1.Service("midl-polkadot-lb", {
     metadata: {
         namespace: testValidatorNamespace.metadata.name,
         name: "midl-polkadot-lb",
+        annotations: {
+            // we need to create the load balancer to get the ip
+            // so we can pass the ip to polkadot node
+            // to advertise as its main external ip
+            // so it can take ingress connections from the network.
+            // But the service won't be created if it's not matched by pods.
+            // To break the loop, we ignore service's readiness
+            "pulumi.com/skipAwait": "true"
+        },
         labels: {
             app: "polkadot-node"
         }
